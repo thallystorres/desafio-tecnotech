@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from core.views import AlunoViewSet, CursoViewSet, MatriculaViewSet
+from core.views import AlunoViewSet, CursoViewSet, MatriculaViewSet, relatorio_matriculas_por_curso, total_pago_por_aluno, total_devido_por_aluno, total_de_pagamentos_pendentes
 
 router = DefaultRouter()
 router.register(r'alunos', AlunoViewSet)
@@ -26,5 +26,9 @@ router.register(r'matriculas', MatriculaViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include(router.urls))
+    path('api/', include(router.urls)),
+    path('api/relatorios/matriculas-por-curso/', relatorio_matriculas_por_curso),
+    path('api/relatorios/total-devido-aluno/', total_devido_por_aluno),
+    path('api/relatorios/total-pago-aluno/', total_pago_por_aluno),
+    path('api/relatorios/total-pagamentos-pendentes/', total_de_pagamentos_pendentes)
 ]

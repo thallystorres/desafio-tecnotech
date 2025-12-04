@@ -1,9 +1,53 @@
-from django.shortcuts import render
 from rest_framework import viewsets
+from rest_framework.decorators import action, api_view
+from rest_framework.response import Response
+from django.db.models import Count, F, Sum
 from .models import Aluno, Curso, Matricula
 from .serializers import AlunoSerializer, CursoSerializer, MatriculaSerializer
-from rest_framework.decorators import action
-from rest_framework.response import Response
+
+
+@api_view(["GET"])
+def total_de_pagamentos_pendentes(request):
+    total = Matricula.objects.filter(status__iexact="pendente")
+    quantidade_pendente = total.count()
+    valor_total_pendente = (
+        total.aggregate(total_em_reais=Sum(F("curso__valor_inscricao")))[
+            "total_em_reais"
+        ]
+        or 0
+    )
+    return Response(
+        {
+            "quantidade_pendente": quantidade_pendente,
+            "valor_total_pendente": valor_total_pendente,
+        }
+    )
+
+@api_view(["GET"])
+def total_pago_por_aluno(request):
+    dados = (
+        Matricula.objects.filter(status__iexact="pago").values(
+            nome_aluno=F("aluno__nome")
+        )
+    ).annotate(total_pago=Sum(F("curso__valor_inscricao")))
+    return Response(list(dados))
+
+@api_view(["GET"])
+def total_devido_por_aluno(request):
+    dados = (
+        Matricula.objects.filter(status__iexact="pendente").values(
+            nome_aluno=F("aluno__nome")
+        )
+    ).annotate(total_devido=Sum(F("curso__valor_inscricao")))
+    return Response(list(dados))
+
+
+@api_view(["GET"])
+def relatorio_matriculas_por_curso(request):
+    dados = (Matricula.objects.values(nome_curso=F("curso__nome"))).annotate(
+        total_matriculas=Count("id")
+    )
+    return Response(list(dados))
 
 
 class AlunoViewSet(viewsets.ModelViewSet):
