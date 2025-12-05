@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Histórico do Aluno</title>
+  </head>
+  <body>
+    <h1>Histórico do Aluno: {{ aluno.nome }}</h1>
+    <p><strong>Email:</strong>{{aluno.email}}</p>
+    <p><strong>Data de ingresso:</strong>{{aluno.data_ingresso}}</p>
+    <h2>Matrículas</h2>
+
+    <table border="1" cellpadding="5">
+      <tr>
+        <th>Curso</th>
+        <th>Data</th>
+        <th>Status</th>
+        <th>Valor: (R$)</th>
+      </tr>
+      {% for m in matriculas %}
+      <tr>
+        <td>{{ m.curso.nome }}</td>
+        <td>{{ m.data_de_matricula }}</td>
+        <td>{{m.status}}</td>
+        <td>{{ m.curso.valor_inscricao|floatformat:2 }}</td>
+      </tr>
+      <tr>
+        {% empty %}
+      </tr>
+      <tr>
+        <td colspan="4">Nenhuma matrícula encontrada.</td>
+      </tr>
+      {% endfor %}
+    </table>
+    <h2>Totais</h2>
+    <ul>
+      <li>Total de matrículas: {{ total_matriculas }}</li>
+      <li>Total de matrículas pagas {{ total_matriculas_pagas }}</li>
+      <li>Total de matrículas pendentes: {{ total_matriculas_pendentes }}</li>
+      <li>Total pago (R$): {{ total_pago|floatformat:2 }}</li>
+      <li>Total pendente (R$): {{ total_pendente|floatformat:2 }}</li>
+    </ul>
+  </body>
+</html>
