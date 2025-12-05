@@ -22,13 +22,12 @@ class MatriculaViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["get"], url_path="por-aluno/(?P<aluno_id>[^/.]+)")
     def listar_por_aluno(self, request, aluno_id=None):
         matriculas = Matricula.objects.filter(aluno_id=aluno_id)
-        serializer = MatriculaSerializer(matriculas, many=True)
+        serializer = self.get_serializer(matriculas, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=["post"])
+    @action(detail=True, methods=["post"], url_path="marcar-como-paga")
     def marcar_como_paga(self, request, pk=None):
         matricula = self.get_object()
         matricula.status = "pago"
         matricula.save()
-        serializer = MatriculaSerializer(matricula)
-        return Response(serializer.data)
+        return Response(self.get_serializer(matricula).data)
