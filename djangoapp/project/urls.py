@@ -14,21 +14,28 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from core.views import AlunoViewSet, CursoViewSet, MatriculaViewSet, relatorio_matriculas_por_curso, total_pago_por_aluno, total_devido_por_aluno, total_de_pagamentos_pendentes
+from core.views.viewsets import AlunoViewSet, CursoViewSet, MatriculaViewSet
+from core.views.views_api import (
+    total_de_pagamentos_pendentes,
+    total_pago_por_aluno,
+    total_devido_por_aluno,
+    relatorio_matriculas_por_curso,
+)
 
 router = DefaultRouter()
-router.register(r'alunos', AlunoViewSet)
-router.register(r'cursos', CursoViewSet)
-router.register(r'matriculas', MatriculaViewSet)
+router.register("alunos", AlunoViewSet)
+router.register("cursos", CursoViewSet)
+router.register("matriculas", MatriculaViewSet)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/', include(router.urls)),
-    path('api/relatorios/matriculas-por-curso/', relatorio_matriculas_por_curso),
-    path('api/relatorios/total-devido-aluno/', total_devido_por_aluno),
-    path('api/relatorios/total-pago-aluno/', total_pago_por_aluno),
-    path('api/relatorios/total-pagamentos-pendentes/', total_de_pagamentos_pendentes)
+    path("admin/", admin.site.urls),
+    path("api/", include(router.urls)),
+    path("api/relatorios/matriculas-por-curso/", relatorio_matriculas_por_curso),
+    path("api/relatorios/total-devido-aluno/", total_devido_por_aluno),
+    path("api/relatorios/total-pago-aluno/", total_pago_por_aluno),
+    path("api/relatorios/total-pagamentos-pendentes/", total_de_pagamentos_pendentes),
 ]
