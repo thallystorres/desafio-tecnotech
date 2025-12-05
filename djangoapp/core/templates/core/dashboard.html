@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <title>Dashboard</title>
+</head>
+<body>
+
+    <h1>Dashboard Geral</h1>
+
+    <h2>Resumo do Sistema</h2>
+    <ul>
+        <li>Total de alunos: {{ total_alunos }}</li>
+        <li>Total de cursos: {{ total_cursos }}</li>
+        <li>Total de matrículas: {{ total_matriculas }}</li>
+        <li>Total pago (R$): {{ total_pago|floatformat:2 }}</li>
+        <li>Total pendente (R$): {{ total_pendente|floatformat:2 }}</li>
+    </ul>
+
+    <h2>Status de Pagamentos</h2>
+    <ul>
+        <li>Pagas: {{ qtd_pagas }} ({{ perc_pagas|floatformat:2 }}%)</li>
+        <li>Pendentes: {{ qtd_pendentes }} ({{ perc_pendentes|floatformat:2 }}%)</li>
+    </ul>
+
+    <h2>Matrículas por Curso</h2>
+    <table border="1" cellpadding="5">
+        <tr>
+            <th>Curso</th>
+            <th>Total de matrículas</th>
+        </tr>
+        {% for curso in matriculas_por_curso %}
+        <tr>
+            <td>{{ curso.nome }}</td>
+            <td>{{ curso.total }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="2">Nenhuma matrícula registrada.</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</body>
+</html>
