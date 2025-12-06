@@ -3,21 +3,18 @@ from rest_framework.response import Response
 from django.db.models import Count, F
 from django.db import connection
 from ..models import Matricula
-from ..services import (
-    calcular_total_matriculas_por_filtro,
-    selecionar_matriculas_por_filtro,
-)
+from ..services import MatriculaService
 
 
 @api_view(["GET"])
 def total_de_pagamentos_pendentes(request):
-    dados = calcular_total_matriculas_por_filtro(Matricula.objects.all(), "pendente")
+    dados = MatriculaService.calcular_total_por_status(Matricula.objects.all(), "pendente")
     return Response(dados)
 
 
 @api_view(["GET"])
 def total_pago_por_aluno(request):
-    dados = selecionar_matriculas_por_filtro(Matricula.objects.all(), "pago")
+    dados = MatriculaService.listar_matriculas_por_status(Matricula.objects.all(), "pago")
     return Response(dados)
 
 
