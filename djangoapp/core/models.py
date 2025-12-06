@@ -39,6 +39,12 @@ def validar_cpf(value):
     validar_cpf_com_digito_continuo(value)
     validar_cpf_calculo(value)
 
+def validar_curso_ativo(curso):
+    if curso.status != StatusCurso.ATIVO:
+        raise ValidationError(
+            _("Não é possível se matricular em cursos inativos."),
+            code="curso_inativo",
+        )
 
 class Aluno(models.Model):
     nome = models.CharField(max_length=100, db_index=True)
@@ -107,6 +113,8 @@ class Matricula(models.Model):
     def __str__(self) -> str:
         return f"{self.aluno.nome} -> {self.curso.nome}"
     
+    def clean(self):
+        validar_curso_ativo(self.curso)
     class Meta:
         ordering = ["-data_de_matricula"]
         verbose_name = "Matrícula"
