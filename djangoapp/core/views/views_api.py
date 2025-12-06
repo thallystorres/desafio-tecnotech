@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.db.models import Count, F
+from django.db import connection
 from ..models import Matricula
 from ..services import (
     calcular_total_matriculas_por_filtro,
@@ -22,8 +23,33 @@ def total_pago_por_aluno(request):
 
 @api_view(["GET"])
 def total_devido_por_aluno(request):
-    dados = selecionar_matriculas_por_filtro(Matricula.objects.all(), "pendente")
-    return Response(dados)
+    query = """
+        SELECT
+            a.id,
+            a.nome as aluno,
+            COALESCE(SUM(c.valor_inscricao), 0) as total_pendente
+        from core_matricula as m
+        INNER JOIN core_aluno as a on a.id = m.aluno_id
+        INNER JOIN core_curso as c on c.id = m.curso_id
+        WHERE m.status = 'pendente'
+        GROUP BY a.id, a.nome
+        ORDER BY total_pendente DESC;
+    """
+
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        rows = cursor.fetchall()
+
+    resultados = [
+        {
+            "id": row[0],
+            "aluno": row[1],
+            "total_pendente": float(row[2]),
+        }
+        for row in rows
+    ]
+
+    return Response(resultados)
 
 
 @api_view(["GET"])
