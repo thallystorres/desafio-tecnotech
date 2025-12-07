@@ -39,12 +39,14 @@ def validar_cpf(value):
     validar_cpf_com_digito_continuo(value)
     validar_cpf_calculo(value)
 
+
 def validar_curso_ativo(curso):
     if curso.status != StatusCurso.ATIVO:
         raise ValidationError(
             _("Não é possível se matricular em cursos inativos."),
             code="curso_inativo",
         )
+
 
 class Aluno(models.Model):
     nome = models.CharField(max_length=100, db_index=True)
@@ -59,7 +61,7 @@ class Aluno(models.Model):
 
     def __str__(self) -> str:
         return f"{self.nome} ({self.cpf})"
-    
+
     class Meta:
         ordering = ["-data_de_ingresso"]
         verbose_name = "Aluno"
@@ -73,15 +75,16 @@ class Curso(models.Model):
     nome = models.CharField(max_length=100, db_index=True)
     carga_horaria = models.PositiveIntegerField()
     valor_inscricao = models.DecimalField(max_digits=8, decimal_places=2)
-    status = models.CharField(max_length=10,
+    status = models.CharField(
+        max_length=10,
         choices=StatusCurso.choices,
         default=StatusCurso.ATIVO,
-        db_index=True
-        )
+        db_index=True,
+    )
 
     def __str__(self) -> str:
         return self.nome
-    
+
     class Meta:
         ordering = ["nome"]
         verbose_name = "Curso"
@@ -93,15 +96,11 @@ class Curso(models.Model):
 
 class Matricula(models.Model):
     aluno = models.ForeignKey(
-        Aluno, on_delete=models.CASCADE,
-        related_name="matriculas",
-        db_index=True
+        Aluno, on_delete=models.CASCADE, related_name="matriculas", db_index=True
     )
     curso = models.ForeignKey(
-        Curso,
-        on_delete=models.CASCADE,
-        related_name="matriculas",
-        db_index=True)
+        Curso, on_delete=models.CASCADE, related_name="matriculas", db_index=True
+    )
     data_de_matricula = models.DateField(auto_now_add=True)
     status = models.CharField(
         max_length=10,
@@ -112,9 +111,10 @@ class Matricula(models.Model):
 
     def __str__(self) -> str:
         return f"{self.aluno.nome} -> {self.curso.nome}"
-    
+
     def clean(self):
         validar_curso_ativo(self.curso)
+
     class Meta:
         ordering = ["-data_de_matricula"]
         verbose_name = "Matrícula"

@@ -2,15 +2,16 @@ from django.db.models import Sum, F, QuerySet, Count
 from decimal import Decimal
 from .models import Aluno, Curso, Matricula, StatusMatricula
 from django.db.models.functions import Coalesce
-class MatriculaService:
 
+
+class MatriculaService:
     @staticmethod
     def calcular_total_por_status(matriculas: QuerySet[Matricula], status: str) -> dict:
         matriculas_filtradas = matriculas.filter(status=status)
         qtd = matriculas_filtradas.count()
-        valor_total = (
-            matriculas_filtradas.aggregate(total=Coalesce(Sum(F("curso__valor_inscricao")), Decimal("0")))["total"] or Decimal("0")
-        )
+        valor_total = matriculas_filtradas.aggregate(
+            total=Coalesce(Sum(F("curso__valor_inscricao")), Decimal("0"))
+        )["total"] or Decimal("0")
         return {
             f"quantidade_{status}": qtd,
             f"valor_total_{status}": valor_total,
@@ -27,9 +28,13 @@ class MatriculaService:
         )
         return {
             "total_pago": dados_pagos[f"valor_total_{StatusMatricula.PAGO}"],
-            "total_pendente": dados_pendentes[f"valor_total_{StatusMatricula.PENDENTE}"],
+            "total_pendente": dados_pendentes[
+                f"valor_total_{StatusMatricula.PENDENTE}"
+            ],
             "total_matriculas_pagas": dados_pagos[f"quantidade_{StatusMatricula.PAGO}"],
-            "total_matriculas_pendentes": dados_pendentes[f"quantidade_{StatusMatricula.PENDENTE}"],
+            "total_matriculas_pendentes": dados_pendentes[
+                f"quantidade_{StatusMatricula.PENDENTE}"
+            ],
             "total_matriculas": matriculas.count(),
             "matriculas": matriculas,
         }
@@ -41,11 +46,11 @@ class MatriculaService:
             .values(nome_aluno=F("aluno__nome"))
             .annotate(total_pago=Sum(F("curso__valor_inscricao")))
         )
-    
+
         return list(dados)
 
-class DashboardService:
 
+class DashboardService:
     @staticmethod
     def gerar_dashboard() -> dict:
         total_alunos = Aluno.objects.count()
@@ -78,7 +83,9 @@ class DashboardService:
             "total_cursos": total_cursos,
             "total_matriculas": total_matriculas,
             "total_pago": dados_pagas[f"valor_total_{StatusMatricula.PAGO}"],
-            "total_pendente": dados_pendentes[f"valor_total_{StatusMatricula.PENDENTE}"],
+            "total_pendente": dados_pendentes[
+                f"valor_total_{StatusMatricula.PENDENTE}"
+            ],
             "qtd_pagas": qtd_pagas,
             "qtd_pendentes": qtd_pendentes,
             "perc_pagas": perc_pagas,

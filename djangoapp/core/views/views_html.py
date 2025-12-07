@@ -10,6 +10,7 @@ def historico_aluno(request, aluno_id):
 
     return render(request, "core/historico_aluno.html", {"aluno": aluno, **dados})
 
+
 def dashboard(request):
     dados = DashboardService.gerar_dashboard()
     return render(request, "core/dashboard.html", dados)
