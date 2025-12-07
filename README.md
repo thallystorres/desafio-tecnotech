@@ -52,7 +52,7 @@ A aplicação está totalmente containerizada. Execute o comando abaixo na raiz 
 
 ```bash
 
-docker-compose up --build
+docker compose up --build
 
 ```
 
@@ -98,7 +98,7 @@ Após os containers estarem rodando, acesse as seguintes interfaces:
 Para acessar o painel de administração (`/admin`), você precisa criar um superusuário. Com os containers rodando, execute:
 
 ```bash
-docker-compose exec web python manage.py createsuperuser
+docker compose exec web python manage.py createsuperuser
 ```
 
 O sistema solicitará:
@@ -164,7 +164,7 @@ A suíte de testes valida os models e services do projeto:
 
 ```bash
 
-docker-compose run --rm web run_tests.sh
+docker compose run --rm web run_tests.sh
 
 ```
 
